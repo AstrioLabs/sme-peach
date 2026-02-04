@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Choose Your Phone</title>
+    <style>
+        /* GLOBAL RESET AND BASE STYLES */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: white;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* TOP NAVIGATION BAR */
+        .top-nav {
+            background: white;
+            padding: 16px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .menu-icon {
+            width: 30px;
+            height: 24px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            cursor: pointer;
+        }
+
+        .menu-icon span {
+            width: 100%;
+            height: 3px;
+            background: #ffb399;
+            border-radius: 2px;
+        }
+
+        .brand-name {
+            font-size: 20px;
+            font-weight: 600;
+            color: #ffb399;
+        }
+
+        .profile-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #ffc9b3;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 18px;
+            color: white;
+        }
+
+        /* SOFT PEACH HIGHLIGHT UNDER HEADER */
+        .header-highlight {
+            height: 4px;
+            background: linear-gradient(90deg, #ffc9b3, #ffb399);
+        }
+
+        /* HERO IMAGE CONTAINER - NATURAL SIZE */
+        .hero-container {
+            width: 100%;
+            padding: 20px;
+        }
+
+        .hero-image-wrapper {
+            width: 100%;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .hero-image {
+            width: 100%;
+            height: auto;
+            display: block;
+            background: white;
+        }
+
+        /* MAIN CONTENT */
+        .main-content {
+            padding: 0 20px 20px;
+        }
+
+        /* HEADER */
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px 0;
+        }
+
+        h1 {
+            color: #ffb399;
+            font-size: 28px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        /* PHONE GRID - MOBILE FIRST (2 COLUMNS) */
+        .phone-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        /* PHONE CARD */
+        .phone-card {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .phone-card:active {
+            transform: scale(0.98);
+        }
+
+        /* IMAGE CONTAINER WITH ROUND CORNERS */
+        .image-container {
+            width: 100%;
+            border-radius: 16px;
+            overflow: hidden;
+        }
+
+        .phone-image {
+            width: 100%;
+            aspect-ratio: 3/4;
+            object-fit: cover;
+            background: linear-gradient(45deg, #f5f5f5 25%, #ececec 50%, #f5f5f5 75%);
+            display: block;
+        }
+
+        /* GB BUTTONS CONTAINER */
+        .gb-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 8px;
+        }
+
+        .gb-btn {
+            flex: 1;
+            padding: 10px 0;
+            border: 2px solid #ffd4c4;
+            background: white;
+            color: #ffb399;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-height: 44px;
+        }
+
+        .gb-btn:active {
+            transform: scale(0.95);
+        }
+
+        .gb-btn.selected {
+            background: #ffc9b3;
+            color: white;
+            border-color: #ffb399;
+        }
+
+        /* BLUR OVERLAY */
+        .blur-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            backdrop-filter: blur(12px);
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 999;
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .blur-overlay.active {
+            display: block;
+        }
+
+        /* HEART FALL ANIMATION CONTAINER */
+        .emojis-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1000;
+            overflow: hidden;
+            display: none;
+        }
+
+        .emojis-container.active {
+            display: block;
+        }
+
+        .falling-emoji {
+            position: absolute;
+            font-size: 40px;
+            animation: fall linear forwards;
+        }
+
+        @keyframes fall {
+            to {
+                transform: translateY(100vh) rotate(360deg);
+            }
+        }
+
+        /* MODAL */
+        .modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.9);
+            background: white;
+            border-radius: 24px;
+            padding: 30px 24px;
+            width: 90%;
+            max-width: 400px;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            z-index: 1001;
+            display: none;
+            animation: modalSlideIn 0.4s ease forwards;
+        }
+
+        .modal.active {
+            display: block;
+        }
+
+        @keyframes modalSlideIn {
+            to {
+                transform: translate(-50%, -50%) scale(1);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* MODAL HEADER */
+        .modal-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-header h2 {
+            font-size: 22px;
+            color: #ffb399;
+            font-weight: 600;
+        }
+
+        /* MODAL PHONE IMAGE CONTAINER */
+        .modal-phone-container {
+            width: 120px;
+            height: 160px;
+            margin: 0 auto 24px;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .modal-phone-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* ITEMS LIST */
+        .items-list {
+            margin-bottom: 30px;
+        }
+
+        .item-row {
+            display: flex;
+            align-items: center;
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            background: white;
+            border: 2px solid #f5f5f5;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            min-height: 72px;
+        }
+
+        .item-row:active {
+            transform: scale(0.98);
+            background: #fafafa;
+        }
+
+        .item-image {
+            width: 50px;
+            height: 50px;
+            border-radius: 8px;
+            flex-shrink: 0;
+            overflow: hidden;
+        }
+
+        .item-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .item-name {
+            flex: 1;
+            margin: 0 16px;
+            font-size: 16px;
+            font-weight: 500;
+            color: #ffb399;
+        }
+
+        /* CUSTOM CHECKBOX */
+        .custom-checkbox {
+            width: 28px;
+            height: 28px;
+            border: 2px solid #ffc9b3;
+            border-radius: 6px;
+            background: white;
+            flex-shrink: 0;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .item-row.checked .custom-checkbox {
+            background: #ffc9b3;
+        }
+
+        .custom-checkbox::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            width: 12px;
+            height: 8px;
+            border-left: 3px solid white;
+            border-bottom: 3px solid white;
+            transform-origin: center;
+            transition: transform 0.3s ease;
+        }
+
+        .item-row.checked .custom-checkbox::after {
+            transform: translate(-60%, -70%) rotate(-45deg) scale(1);
+        }
+
+        /* CONFIRM BUTTON (LARGE + CIRCLE) */
+        .modal-footer {
+            display: flex;
+            justify-content: center;
+        }
+
+        .confirm-btn {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background: #ffc9b3;
+            border: none;
+            color: white;
+            font-size: 36px;
+            font-weight: 300;
+            cursor: pointer;
+            box-shadow: 0 4px 16px rgba(255, 201, 179, 0.5);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+        }
+
+        .confirm-btn:active {
+            transform: scale(0.95);
+        }
+
+        .confirm-btn:disabled {
+            background: #ccc;
+            box-shadow: none;
+            cursor: not-allowed;
+        }
+
+        /* FULLSCREEN HEART CELEBRATION */
+        .emoji-celebration {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 179, 153, 0.85);
+            backdrop-filter: blur(20px);
+            z-index: 2000;
+            display: none;
+            pointer-events: none;
+        }
+
+        .emoji-celebration.active {
+            display: block;
+        }
+
+        /* TABLET/DESKTOP: KEEP MOBILE CENTERED LOOK */
+        @media (min-width: 600px) {
+            .main-content {
+                padding: 0 40px 40px;
+            }
+
+            h1 {
+                font-size: 32px;
+            }
+
+            .phone-grid {
+                max-width: 500px;
+            }
+
+            /* Keep hero image constrained on larger screens */
+            .hero-container {
+                max-width: 600px;
+                margin: 0 auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- TOP NAVIGATION -->
+    <nav class="top-nav">
+        <div class="menu-icon">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+        <div class="brand-name">Apples</div>
+        <div class="profile-icon">👤</div>
+    </nav>
+
+    <!-- SOFT PEACH HIGHLIGHT -->
+    <div class="header-highlight"></div>
+
+    <!-- HERO IMAGE SECTION - NATURAL SIZE -->
+    <div class="hero-container">
+        <div class="hero-image-wrapper">
+            <img src="images/phone.JPG" alt="Featured Phones" class="hero-image">
+        </div>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="main-content">
+        <!-- HEADER -->
+        <header>
+            <h1>Choose your phone</h1>
+        </header>
+
+        <!-- PHONE GRID -->
+        <div class="phone-grid" id="phoneGrid">
+            <!-- Phones will be generated by JavaScript -->
+        </div>
+    </div>
+
+    <!-- BLUR OVERLAY -->
+    <div class="blur-overlay" id="blurOverlay"></div>
+
+    <!-- HEARTS CONTAINER FOR MODAL -->
+    <div class="emojis-container" id="emojisContainer"></div>
+
+    <!-- MODAL -->
+    <div class="modal" id="packageModal">
+        <div class="modal-header">
+            <h2>More affordable in package</h2>
+        </div>
+        <!-- SELECTED PHONE IMAGE -->
+        <div class="modal-phone-container">
+            <img src="" alt="Selected Phone" class="modal-phone-image" id="modalPhoneImage">
+        </div>
+        <div class="items-list" id="itemsList">
+            <!-- Items will be generated by JavaScript -->
+        </div>
+        <div class="modal-footer">
+            <button class="confirm-btn" id="confirmBtn" disabled>+</button>
+        </div>
+    </div>
+
+    <!-- FULLSCREEN HEART CELEBRATION -->
+    <div class="emoji-celebration" id="emojiCelebration"></div>
+
+    <script>
+        // PHONE DATA
+        const phones = [
+            { id: 1, name: 'iPhone 15 Pro', image: 'images/17_orange.png' },
+            { id: 2, name: 'Samsung S24', image: 'images/air.webp' },
+            { id: 3, name: 'Google Pixel 8', image: 'images/16_black.png' },
+            { id: 4, name: 'OnePlus 12', image: 'images/16_pink.png' },
+            { id: 5, name: 'Xiaomi 14', image: 'images/15_blue.webp' },
+            { id: 6, name: 'Oppo Find X7', image: 'images/17_blue.png' }
+        ];
+
+        // PACKAGE ITEMS
+        const packageItems = [
+            { id: 1, name: 'AirPods Max', image: 'images/pods.webp' },
+            { id: 2, name: 'Watch Pro', image: 'images/watch.jpg' },
+            { id: 3, name: 'MacBook Pro', image: 'images/mac.webp' }
+        ];
+
+        // HEART EMOJIS FOR FALLING ANIMATION
+        const phoneEmojis = ['💫', '🤍','🍑', '✨', '⭐️', '🍑', '✨', '⭐️', '💫', '🤍'];
+
+        // STATE
+        let selectedPhone = null;
+        let selectedGB = null;
+        let checkedItems = new Set();
+
+        // DOM ELEMENTS
+        const phoneGrid = document.getElementById('phoneGrid');
+        const blurOverlay = document.getElementById('blurOverlay');
+        const emojisContainer = document.getElementById('emojisContainer');
+        const packageModal = document.getElementById('packageModal');
+        const itemsList = document.getElementById('itemsList');
+        const confirmBtn = document.getElementById('confirmBtn');
+        const emojiCelebration = document.getElementById('emojiCelebration');
+        const modalPhoneImage = document.getElementById('modalPhoneImage');
+
+        // RENDER PHONES
+        function renderPhones() {
+            phoneGrid.innerHTML = phones.map(phone => `
+                <div class="phone-card">
+                    <div class="image-container">
+                        <img src="${phone.image}" alt="${phone.name}" class="phone-image">
+                    </div>
+                    <div class="gb-buttons">
+                        <button class="gb-btn" data-phone="${phone.id}" data-gb="3">128 GB</button>
+                        <button class="gb-btn" data-phone="${phone.id}" data-gb="6">256 GB</button>
+                        <button class="gb-btn" data-phone="${phone.id}" data-gb="10">512 GB</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // RENDER PACKAGE ITEMS
+        function renderPackageItems() {
+            itemsList.innerHTML = packageItems.map(item => `
+                <div class="item-row" data-item="${item.id}">
+                    <div class="item-image">
+                        <img src="${item.image}" alt="${item.name}">
+                    </div>
+                    <div class="item-name">${item.name}</div>
+                    <div class="custom-checkbox"></div>
+                </div>
+            `).join('');
+        }
+
+        // HANDLE GB BUTTON CLICK
+        phoneGrid.addEventListener('click', (e) => {
+            if (e.target.classList.contains('gb-btn')) {
+                const phoneId = parseInt(e.target.dataset.phone);
+                const gb = e.target.dataset.gb;
+                
+                selectedPhone = phoneId;
+                selectedGB = gb;
+
+                // Visual feedback: highlight selected button
+                document.querySelectorAll('.gb-btn').forEach(btn => {
+                    btn.classList.remove('selected');
+                });
+                e.target.classList.add('selected');
+
+                // Update modal phone image
+                const phone = phones.find(p => p.id === phoneId);
+                if (phone) {
+                    modalPhoneImage.src = phone.image;
+                    modalPhoneImage.alt = phone.name;
+                }
+
+                // Open modal after short delay
+                setTimeout(openModal, 200);
+            }
+        });
+
+        // OPEN MODAL
+        function openModal() {
+            blurOverlay.classList.add('active');
+            packageModal.classList.add('active');
+            emojisContainer.classList.add('active');
+            startEmojiFall();
+            document.body.style.overflow = 'hidden';
+        }
+
+        // CLOSE MODAL
+        function closeModal() {
+            blurOverlay.classList.remove('active');
+            packageModal.classList.remove('active');
+            document.body.style.overflow = '';
+            
+            // Keep hearts for a moment after closing
+            setTimeout(() => {
+                emojisContainer.classList.remove('active');
+                stopEmojiFall();
+            }, 1000);
+        }
+
+        // HEART FALL ANIMATION
+        let emojiInterval;
+        function startEmojiFall() {
+            stopEmojiFall(); // Clear any existing interval
+            
+            // Generate MANY hearts immediately
+            for (let i = 0; i < 50; i++) {
+                setTimeout(() => createFallingEmoji(emojisContainer), i * 30);
+            }
+
+            // Continue generating hearts
+            emojiInterval = setInterval(() => {
+                createFallingEmoji(emojisContainer);
+                createFallingEmoji(emojisContainer); // Create 2 at once for density
+            }, 150);
+        }
+
+        function stopEmojiFall() {
+            if (emojiInterval) {
+                clearInterval(emojiInterval);
+                emojiInterval = null;
+            }
+            // Clear all hearts
+            setTimeout(() => {
+                emojisContainer.innerHTML = '';
+            }, 2000);
+        }
+
+        function createFallingEmoji(container) {
+            const emoji = document.createElement('div');
+            emoji.className = 'falling-emoji';
+            
+            // Random heart from our list
+            emoji.textContent = phoneEmojis[Math.floor(Math.random() * phoneEmojis.length)];
+            
+            // Randomize properties
+            const size = Math.random() * 30 + 30; // 30-60px
+            const left = Math.random() * 100; // 0-100%
+            const duration = Math.random() * 2 + 2; // 2-4s
+            const opacity = Math.random() * 0.6 + 0.4; // 0.4-1
+            const delay = Math.random() * 0.5; // 0-0.5s
+            
+            emoji.style.fontSize = `${size}px`;
+            emoji.style.left = `${left}%`;
+            emoji.style.top = `-${size}px`;
+            emoji.style.opacity = opacity;
+            emoji.style.animationDuration = `${duration}s`;
+            emoji.style.animationDelay = `${delay}s`;
+            
+            container.appendChild(emoji);
+            
+            // Remove heart after animation
+            setTimeout(() => {
+                emoji.remove();
+            }, (duration + delay) * 1000);
+        }
+
+        // HANDLE ITEM SELECTION
+        itemsList.addEventListener('click', (e) => {
+            const itemRow = e.target.closest('.item-row');
+            if (!itemRow) return;
+
+            const itemId = parseInt(itemRow.dataset.item);
+            
+            // Toggle checked state
+            if (checkedItems.has(itemId)) {
+                checkedItems.delete(itemId);
+                itemRow.classList.remove('checked');
+            } else {
+                checkedItems.add(itemId);
+                itemRow.classList.add('checked');
+            }
+
+            // Enable/disable confirm button
+            confirmBtn.disabled = checkedItems.size === 0;
+        });
+
+        // HANDLE CONFIRM BUTTON - FULLSCREEN HEART CELEBRATION
+        confirmBtn.addEventListener('click', () => {
+            if (checkedItems.size === 0) return;
+
+            // Close modal first
+            closeModal();
+
+            // Show fullscreen heart celebration
+            emojiCelebration.classList.add('active');
+
+            // Generate MASSIVE heart celebration
+            for (let i = 0; i < 100; i++) {
+                setTimeout(() => createFallingEmoji(emojiCelebration), i * 20);
+            }
+
+            // Continue generating hearts for 2 seconds
+            const celebrationInterval = setInterval(() => {
+                createFallingEmoji(emojiCelebration);
+                createFallingEmoji(emojiCelebration);
+                createFallingEmoji(emojiCelebration);
+            }, 100);
+
+            // Stop after 2 seconds and fade out
+            setTimeout(() => {
+                clearInterval(celebrationInterval);
+                setTimeout(() => {
+                    emojiCelebration.classList.remove('active');
+                    emojiCelebration.innerHTML = '';
+                }, 2000);
+            }, 2000);
+
+            // Reset state
+            checkedItems.clear();
+            document.querySelectorAll('.item-row').forEach(row => {
+                row.classList.remove('checked');
+            });
+            confirmBtn.disabled = true;
+        });
+
+        // PREVENT BACKGROUND INTERACTION WHEN MODAL IS OPEN
+        blurOverlay.addEventListener('click', (e) => {
+            e.stopPropagation();
+        });
+
+        // INITIALIZE
+        renderPhones();
+        renderPackageItems();
+    </script>
+</body>
+</html>
